@@ -1,9 +1,8 @@
 #include "../libs/helpers.h"
-#include "arpa/inet.h"
-#include "stdio.h"
-#include "string.h"
+#include "./query.h"
 #include "sys/socket.h"
 #include "unistd.h"
+#include <arpa/inet.h>
 
 int main()
 {
@@ -24,20 +23,17 @@ int main()
     die("connect()");
   }
 
-  char msg[] = "Hello from client";
-  ssize_t err_check = write(fd, msg, strlen(msg));
-  if (err_check < 0)
+  if (!query(fd, "hello1"))
   {
-    die("write");
+    goto L_DONE;
   }
 
-  char read_buffer[64] = {};
-  ssize_t n = read(fd, read_buffer, sizeof(read_buffer) - 1);
-  if (n < 0)
+  if (!query(fd, "hello2"))
   {
-    die("read()");
+    goto L_DONE;
   }
 
-  printf("Server says: %s\n", read_buffer);
+L_DONE:
   close(fd);
+  return 0;
 }
