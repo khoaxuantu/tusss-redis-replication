@@ -1,5 +1,4 @@
 #include "../libs/helpers.h"
-#include "../libs/struct_addr.h"
 #include "arpa/inet.h"
 #include "netinet/ip.h"
 #include "stdbool.h"
@@ -9,9 +8,9 @@
 #include "sys/socket.h"
 #include "unistd.h"
 
-struct SockAddrIn init_addr()
+struct sockaddr_in init_addr()
 {
-  struct SockAddrIn addr = {};
+  struct sockaddr_in addr = {};
 
   addr.sin_family = AF_INET;
   addr.sin_port = ntohs(1234);
@@ -53,8 +52,7 @@ int main(void)
   int val = 1;
   setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val));
 
-  struct SockAddrIn addr = init_addr();
-  print_struct_addr(&addr);
+  struct sockaddr_in addr = init_addr();
 
   int rv = bind(fd, (const struct sockaddr *)&addr, sizeof(addr));
   if (rv)
@@ -71,7 +69,7 @@ int main(void)
 
   while (true)
   {
-    struct SockAddrIn client_addr = {};
+    struct sockaddr_in client_addr = {};
     socklen_t addr_len = sizeof(client_addr);
     int connfd = accept(fd, (struct sockaddr *)&client_addr, &addr_len);
     if (connfd < 0)

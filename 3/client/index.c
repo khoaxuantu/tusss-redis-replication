@@ -1,5 +1,4 @@
 #include "../libs/helpers.h"
-#include "../libs/struct_addr.h"
 #include "arpa/inet.h"
 #include "stdio.h"
 #include "string.h"
@@ -14,7 +13,7 @@ int main()
     die("socket()");
   }
 
-  struct SockAddrIn addr = {};
+  struct sockaddr_in addr = {};
   addr.sin_addr.s_addr = ntohl(INADDR_LOOPBACK);
   addr.sin_family = AF_INET;
   addr.sin_port = ntohs(1234);
