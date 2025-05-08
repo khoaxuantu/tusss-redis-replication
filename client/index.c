@@ -28,7 +28,7 @@ int main()
     goto L_DONE;
   }
 
-  if (!query(fd, "hello2"))
+  if (!query(fd, "hello234"))
   {
     goto L_DONE;
   }
