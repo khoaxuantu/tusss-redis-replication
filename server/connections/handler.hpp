@@ -15,7 +15,6 @@ static void buf_append(std::vector<uint8_t> *buf, const uint8_t *data, size_t le
   buf->insert(buf->end(), data, data + len);
 }
 
-
 static void buf_remove(std::vector<uint8_t> *buf, size_t len)
 {
   buf->erase(buf->begin(), buf->begin() + len);
@@ -39,7 +38,6 @@ static bool try_a_request(Connection *conn)
   }
 
   // Protocol: message body
-  printf("len: %u\nincoming size: %lu\n", len, conn->incoming.size());
   if (conn->incoming.size() < MSG_HEADER_SIZE + len)
   {
     return false;
@@ -68,7 +66,10 @@ void handler_read(Connection *conn)
   }
 
   buf_append(&conn->incoming, buf, (size_t)read_size);
-  try_a_request(conn);
+
+  while (try_a_request(conn))
+  {
+  }
 
   if (conn->outgoing.size() > 0)
   {
