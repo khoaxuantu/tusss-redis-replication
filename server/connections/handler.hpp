@@ -46,6 +46,8 @@ static bool try_a_request(Connection *conn)
   const uint8_t *request = &conn->incoming[MSG_BODY_START_INDEX];
 
   // TODO: Process the parsed message
+  printf("client says: len:%d data:%.*s\n",
+         len, len < 100 ? len : 100, request);
 
   buf_append(&conn->outgoing, (const uint8_t *)&len, MSG_HEADER_SIZE);
   buf_append(&conn->outgoing, request, len);
