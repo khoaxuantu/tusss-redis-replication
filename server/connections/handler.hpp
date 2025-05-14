@@ -56,6 +56,29 @@ static bool try_a_request(Connection *conn)
   return true;
 }
 
+void handler_write(Connection *conn)
+{
+  assert(conn->outgoing.size() > 0);
+  ssize_t rv = write(conn->fd, conn->outgoing.data(), conn->outgoing.size());
+  if (rv < 0 && errno == EAGAIN)
+  {
+    return; // actually not ready to write so we can make it try again
+  }
+  if (rv < 0)
+  {
+    conn->want_close = true;
+    return;
+  }
+
+  buf_remove(&conn->outgoing, (size_t)rv);
+
+  if (conn->outgoing.size() == 0)
+  {
+    conn->want_read = true;
+    conn->want_write = false;
+  }
+}
+
 void handler_read(Connection *conn)
 {
   uint8_t buf[64 * 1024];
@@ -77,25 +100,8 @@ void handler_read(Connection *conn)
   {
     conn->want_read = false;
     conn->want_write = true;
-  }
-}
 
-void handler_write(Connection *conn)
-{
-  assert(conn->outgoing.size() > 0);
-  ssize_t rv = write(conn->fd, conn->outgoing.data(), conn->outgoing.size());
-  if (rv < 0)
-  {
-    conn->want_close = true;
-    return;
-  }
-
-  buf_remove(&conn->outgoing, (size_t)rv);
-
-  if (conn->outgoing.size() == 0)
-  {
-    conn->want_read = true;
-    conn->want_write = false;
+    handler_write(conn);
   }
 }
 
